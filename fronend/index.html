@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    
+    <!-- Primary Meta Tags -->
+    <title>Quản Lý Đơn Hàng - Shipper</title>
+    <meta name="title" content="Quản Lý Đơn Hàng - Shipper" />
+    <meta name="description" content="Ứng dụng quản lý đơn hàng cho shipper - theo dõi thanh toán và tìm kiếm đơn hàng dễ dàng" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json" />
+    
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#667eea" />
+    <meta name="msapplication-TileColor" content="#667eea" />
+    <meta name="msapplication-navbutton-color" content="#667eea" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    
+    <!-- iOS Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Quản Lý Đơn" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+    
+    <!-- Standard Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header class="header">
+        <h1>📦 Quản Lý Đơn Hàng</h1>
+        <div class="stats-container" id="statsContainer">
+          <div class="stat-item">
+            <span class="stat-label">Tổng đơn:</span>
+            <span class="stat-value" id="totalOrders">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Đã thanh toán:</span>
+            <span class="stat-value paid" id="paidAmount">0đ</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Chưa thanh toán:</span>
+            <span class="stat-value unpaid" id="unpaidAmount">0đ</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-button active" onclick="switchTab('add')">
+          ➕ Thêm Đơn
+        </button>
+        <button class="tab-button" onclick="switchTab('list')">
+          📋 Danh Sách
+        </button>
+        <button class="tab-button" onclick="switchTab('search')">
+          🔍 Tìm Kiếm
+        </button>
+      </div>
+
+      <!-- Tab: Thêm Đơn Hàng -->
+      <div id="addTab" class="tab-content active">
+        <div class="form-container">
+          <h2>Thêm Đơn Hàng Mới</h2>
+          <form id="orderForm" onsubmit="addOrder(event)">
+            <div class="form-group">
+              <label for="orderCode">Mã Đơn Hàng *</label>
+              <input
+                type="text"
+                id="orderCode"
+                placeholder="Paste mã đơn hàng tại đây..."
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="amount">Số Tiền (VNĐ) *</label>
+              <input
+                type="number"
+                id="amount"
+                placeholder="Nhập số tiền..."
+                min="0"
+                step="1000"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Trạng Thái Thanh Toán *</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input
+                    type="radio"
+                    name="paymentStatus"
+                    value="paid"
+                    onchange="togglePaymentMethod(true)"
+                    checked
+                  />
+                  <span>✅ Đã Thanh Toán</span>
+                </label>
+                <label class="radio-label">
+                  <input
+                    type="radio"
+                    name="paymentStatus"
+                    value="unpaid"
+                    onchange="togglePaymentMethod(false)"
+                  />
+                  <span>⏳ Chưa Thanh Toán</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group" id="paymentMethodGroup">
+              <label>Phương Thức Thanh Toán</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="bank_transfer"
+                    checked
+                  />
+                  <span>🏦 Chuyển Khoản</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="paymentMethod" value="cash" />
+                  <span>💵 Tiền Mặt</span>
+                </label>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+              💾 Lưu Đơn Hàng
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Tab: Danh Sách Đơn Hàng -->
+      <div id="listTab" class="tab-content">
+        <div class="list-header">
+          <h2>Danh Sách Đơn Hàng</h2>
+          <button class="btn btn-secondary" onclick="loadOrders()">
+            🔄 Làm Mới
+          </button>
+        </div>
+        <div id="ordersList" class="orders-list">
+          <!-- Orders will be loaded here -->
+        </div>
+      </div>
+
+      <!-- Tab: Tìm Kiếm -->
+      <div id="searchTab" class="tab-content">
+        <div class="form-container">
+          <h2>Tìm Kiếm Đơn Hàng</h2>
+          <div class="form-group">
+            <label for="searchCode">Mã Đơn Hàng (5 số cuối)</label>
+            <input
+              type="text"
+              id="searchCode"
+              placeholder="Nhập mã đơn hoặc 5 số cuối..."
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="searchAmount">Số Tiền Chính Xác</label>
+            <input
+              type="number"
+              id="searchAmount"
+              placeholder="Nhập số tiền..."
+              min="0"
+              step="1000"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Khoảng Tiền</label>
+            <div class="amount-range">
+              <input
+                type="number"
+                id="minAmount"
+                placeholder="Từ..."
+                min="0"
+                step="1000"
+              />
+              <span>-</span>
+              <input
+                type="number"
+                id="maxAmount"
+                placeholder="Đến..."
+                min="0"
+                step="1000"
+              />
+            </div>
+          </div>
+
+          <button class="btn btn-primary" onclick="searchOrders()">
+            🔍 Tìm Kiếm
+          </button>
+          <button class="btn btn-secondary" onclick="clearSearch()">
+            ❌ Xóa Bộ Lọc
+          </button>
+        </div>
+        <div id="searchResults" class="orders-list">
+          <!-- Search results will appear here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- PWA Install Button -->
+    <button id="installButton" class="install-button" style="display: none;">
+      📱 Cài Đặt Ứng Dụng
+    </button>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

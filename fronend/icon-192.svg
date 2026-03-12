@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="192" height="192" fill="url(#grad)" rx="19.200000000000003"/>
+  
+  <!-- Box body -->
+  <rect x="38.400000000000006" y="67.19999999999999" width="115.19999999999999" height="86.4" fill="white" rx="3.84"/>
+  
+  <!-- Box top flap left -->
+  <polygon points="38.400000000000006,67.19999999999999 96,38.400000000000006 96,67.19999999999999" fill="rgba(255,255,255,0.95)"/>
+  
+  <!-- Box top flap right -->
+  <polygon points="96,38.400000000000006 153.60000000000002,67.19999999999999 96,67.19999999999999" fill="rgba(255,255,255,0.85)"/>
+  
+  <!-- Tape -->
+  <rect x="86.4" y="67.19999999999999" width="19.200000000000003" height="86.4" fill="#764ba2" opacity="0.8"/>
+  
+  <!-- Check mark -->
+  <path d="M 61.44 105.60000000000001 L 82.56 128.64000000000001 L 130.56 86.4" 
+        stroke="#10b981" stroke-width="9.600000000000001" stroke-linecap="round" 
+        stroke-linejoin="round" fill="none"/>
+</svg>
