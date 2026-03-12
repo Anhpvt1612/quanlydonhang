@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    
+    <!-- Primary Meta Tags -->
+    <title>QuanLyDonHang Pro - Quản Lý Đơn Hàng Chuyên Nghiệp</title>
+    <meta name="title" content="QuanLyDonHang Pro" />
+    <meta name="description" content="Hệ thống quản lý đơn hàng chuyên nghiệp cho shipper" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json" />
+    
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="QuanLyDonHang" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" href="icon-192.png" />
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles-v2.css" />
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-spinner"></div>
+        <p>Đang tải...</p>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="auth-screen">
+        <div class="auth-container">
+            <div class="auth-header">
+                <i data-lucide="package-check" class="auth-icon"></i>
+                <h1>QuanLyDonHang Pro</h1>
+                <p>Hệ thống quản lý đơn hàng chuyên nghiệp</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="loginTab" onclick="switchAuthTab('login')">Đăng Nhập</button>
+                <button class="auth-tab" id="registerTab" onclick="switchAuthTab('register')">Đăng Ký</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label><i data-lucide="user"></i> Tên đăng nhập</label>
+                    <input type="text" id="loginUsername" required placeholder="Nhập tên đăng nhập">
+                </div>
+                <div class="form-group">
+                    <label><i data-lucide="lock"></i> Mật khẩu</label>
+                    <input type="password" id="loginPassword" required placeholder="Nhập mật khẩu">
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i data-lucide="log-in"></i>
+                    Đăng Nhập
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form" style="display: none;">
+                <div class="form-group">
+                    <label><i data-lucide="user"></i> Tên đăng nhập</label>
+                    <input type="text" id="registerUsername" required placeholder="Chọn tên đăng nhập">
+                </div>
+                <div class="form-group">
+                    <label><i data-lucide="user-circle"></i> Họ tên</label>
+                    <input type="text" id="registerFullName" placeholder="Nhập họ tên của bạn">
+                </div>
+                <div class="form-group">
+                    <label><i data-lucide="lock"></i> Mật khẩu</label>
+                    <input type="password" id="registerPassword" required placeholder="Tạo mật khẩu">
+                </div>
+                <div class="form-group">
+                    <label><i data-lucide="lock-keyhole"></i> Xác nhận mật khẩu</label>
+                    <input type="password" id="registerConfirmPassword" required placeholder="Nhập lại mật khẩu">
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i data-lucide="user-plus"></i>
+                    Đăng Ký
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" style="display: none;">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <button class="menu-btn" onclick="toggleSidebar()">
+                    <i data-lucide="menu"></i>
+                </button>
+                <h1 class="app-title">
+                    <i data-lucide="package-check"></i>
+                    QuanLyDonHang Pro
+                </h1>
+            </div>
+            <div class="header-right">
+                <button class="icon-btn" onclick="openExportModal()">
+                    <i data-lucide="download"></i>
+                </button>
+                <div class="user-menu">
+                    <button class="user-btn" onclick="toggleUserMenu()">
+                        <i data-lucide="user-circle"></i>
+                        <span id="userDisplayName">User</span>
+                        <i data-lucide="chevron-down" class="chevron"></i>
+                    </button>
+                    <div class="user-menu-dropdown" id="userMenuDropdown">
+                        <button onclick="logout()">
+                            <i data-lucide="log-out"></i>
+                            Đăng xuất
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <nav class="sidebar-nav">
+                <button class="nav-item active" onclick="showView('dashboard')">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" onclick="showView('orders')">
+                    <i data-lucide="package"></i>
+                    <span>Đơn Hàng</span>
+                </button>
+                <button class="nav-item" onclick="showView('calendar')">
+                    <i data-lucide="calendar"></i>
+                    <span>Lịch</span>
+                </button>
+                <button class="nav-item" onclick="showView('analytics')">
+                    <i data-lucide="bar-chart-3"></i>
+                    <span>Thống Kê</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <div id="dashboardView" class="view active">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon primary">
+                            <i data-lucide="package"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">Tổng Đơn Hàng</p>
+                            <p class="stat-value" id="statTotalOrders">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon success">
+                            <i data-lucide="check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">Đã Thanh Toán</p>
+                            <p class="stat-value paid" id="statPaidAmount">0đ</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon warning">
+                            <i data-lucide="clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">Chưa Thanh Toán</p>
+                            <p class="stat-value unpaid" id="statUnpaidAmount">0đ</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon info">
+                            <i data-lucide="calendar-days"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">Hôm Nay</p>
+                            <p class="stat-value" id="statTodayOrders">0 đơn</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <button class="btn-primary" onclick="openAddOrderModal()">
+                        <i data-lucide="plus"></i>
+                        Thêm Đơn Hàng
+                    </button>
+                    <button class="btn-secondary" onclick="showView('orders')">
+                        <i data-lucide="list"></i>
+                        Xem Tất Cả
+                    </button>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="section">
+                    <h2 class="section-title">
+                        <i data-lucide="clock"></i>
+                        Đơn Hàng Gần Đây
+                    </h2>
+                    <div id="recentOrdersList" class="orders-list"></div>
+                </div>
+            </div>
+
+            <!-- Orders View -->
+            <div id="ordersView" class="view">
+                <!-- Filters -->
+                <div class="filters-bar">
+                    <div class="search-box">
+                        <i data-lucide="search"></i>
+                        <input type="text" id="searchInput" placeholder="Tìm kiếm mã đơn hàng..." onkeyup="applyFilters()">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <select id="filterStatus" onchange="applyFilters()">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="paid">Đã thanh toán</option>
+                            <option value="unpaid">Chưa thanh toán</option>
+                        </select>
+                        
+                        <input type="date" id="filterStartDate" onchange="applyFilters()">
+                        <input type="date" id="filterEndDate" onchange="applyFilters()">
+                        
+                        <select id="sortBy" onchange="applyFilters()">
+                            <option value="created_at">Ngày tạo</option>
+                            <option value="order_date">Ngày giao</option>
+                            <option value="amount">Số tiền</option>
+                        </select>
+                        
+                        <button class="icon-btn" onclick="toggleSortOrder()">
+                            <i data-lucide="arrow-down-up" id="sortOrderIcon"></i>
+                        </button>
+                        
+                        <button class="icon-btn" onclick="clearFilters()">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bulk Actions -->
+                <div class="bulk-actions" id="bulkActions" style="display: none;">
+                    <span id="selectedCount">0 đã chọn</span>
+                    <button class="btn-danger" onclick="bulkDelete()">
+                        <i data-lucide="trash-2"></i>
+                        Xóa đã chọn
+                    </button>
+                </div>
+
+                <!-- Orders List -->
+                <div id="ordersListView" class="orders-list"></div>
+            </div>
+
+            <!-- Calendar View -->
+            <div id="calendarView" class="view">
+                <h2 class="section-title">
+                    <i data-lucide="calendar"></i>
+                    Lịch Đơn Hàng
+                </h2>
+                <div id="calendarContent"></div>
+            </div>
+
+            <!-- Analytics View -->
+            <div id="analyticsView" class="view">
+                <h2 class="section-title">
+                    <i data-lucide="bar-chart-3"></i>
+                    Thống Kê Chi Tiết
+                </h2>
+                <div id="analyticsContent"></div>
+            </div>
+        </main>
+
+        <!-- FAB Button -->
+        <button class="fab" onclick="openAddOrderModal()">
+            <i data-lucide="plus"></i>
+        </button>
+    </div>
+
+    <!-- Add/Edit Order Modal -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Thêm Đơn Hàng</h3>
+                <button class="close-btn" onclick="closeOrderModal()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="orderForm" onsubmit="saveOrder(event)">
+                <input type="hidden" id="orderId">
+                
+                <div class="form-group">
+                    <label><i data-lucide="hash"></i> Mã Đơn Hàng *</label>
+                    <input type="text" id="orderCode" required placeholder="Paste mã đơn hàng">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i data-lucide="dollar-sign"></i> Số Tiền (VNĐ) *</label>
+                        <input type="number" id="orderAmount" required min="0" step="1000" placeholder="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i data-lucide="calendar"></i> Ngày Giao *</label>
+                        <input type="date" id="orderDate" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><i data-lucide="credit-card"></i> Trạng Thái Thanh Toán *</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="paymentStatus" value="paid" checked onchange="togglePaymentMethod()">
+                            <span><i data-lucide="check-circle"></i> Đã Thanh Toán</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="paymentStatus" value="unpaid" onchange="togglePaymentMethod()">
+                            <span><i data-lucide="clock"></i> Chưa Thanh Toán</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group" id="paymentMethodGroup">
+                    <label><i data-lucide="wallet"></i> Phương Thức</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="paymentMethod" value="bank_transfer" checked>
+                            <span><i data-lucide="building-2"></i> Chuyển Khoản</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="paymentMethod" value="cash">
+                            <span><i data-lucide="banknote"></i> Tiền Mặt</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><i data-lucide="file-text"></i> Ghi Chú</label>
+                    <textarea id="orderNote" rows="3" placeholder="Thêm ghi chú (không bắt buộc)"></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeOrderModal()">Hủy</button>
+                    <button type="submit" class="btn-primary">
+                        <i data-lucide="save"></i>
+                        Lưu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="exportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Xuất Dữ Liệu</h3>
+                <button class="close-btn" onclick="closeExportModal()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="export-options">
+                <button class="export-btn" onclick="exportToExcel()">
+                    <i data-lucide="file-spreadsheet"></i>
+                    <span>Xuất Excel</span>
+                </button>
+                <button class="export-btn" onclick="exportToJSON()">
+                    <i data-lucide="file-json"></i>
+                    <span>Xuất JSON</span>
+                </button>
+                <button class="export-btn" onclick="exportToCSV()">
+                    <i data-lucide="file-text"></i>
+                    <span>Xuất CSV</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Confirmation Dialog -->
+    <div id="confirmDialog" class="modal">
+        <div class="modal-content confirm-dialog">
+            <div class="confirm-icon" id="confirmIcon"></div>
+            <h3 id="confirmTitle">Xác nhận</h3>
+            <p id="confirmMessage">Bạn có chắc chắn?</p>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeConfirmDialog()">Hủy</button>
+                <button class="btn-danger" id="confirmBtn" onclick="confirmAction()">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="app-v2.js"></script>
+</body>
+</html>
